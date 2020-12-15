@@ -1,0 +1,37 @@
+{
+    "name": "ndm-cli",
+    "version": "1.0.0",
+    "description": "note dispose manager",
+    "main": "index.js",
+    "scripts": {
+        "test": "node dist/index.js",
+        "build": "tsc -w",
+        "dev": "tsc -w && nodemon --inspect dist/index.js",
+        "debug": "node ./dist/index.js new ./src"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/TankNee/ndm-cli.git"
+    },
+    "keywords": [
+        "note"
+    ],
+    "author": "TankNee",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/TankNee/ndm-cli/issues"
+    },
+    "homepage": "https://github.com/TankNee/ndm-cli#readme",
+    "devDependencies": {
+        "@types/args": "^3.0.0",
+        "nodemon": "^2.0.6",
+        "@types/lodash": "^4.14.165",
+        "@types/node": "^14.14.13"
+    },
+    "dependencies": {
+        "args": "^5.0.1",
+        "dotenv": "^8.2.0",
+        "lodash": "^4.17.20",
+        "path-extra": "^4.3.0"
+    }
+}
