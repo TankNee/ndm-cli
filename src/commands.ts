@@ -2,14 +2,14 @@ import path from "path";
 import _ from "lodash";
 import fs from "fs";
 import { getFormatDate, isNullOrEmpty } from "./utlis";
+import shell from "shelljs";
+
 export function createNewNote(name: string, sub: string[], options: any) {
     let notePath = sub[0];
-    if (isNullOrEmpty(notePath)) {
-        // dispose the situtation of null note path
-    }
+    const baseDir = process.env["FOLDER"] || "";
     notePath = path.isAbsolute(notePath)
         ? notePath
-        : path.resolve(process.cwd(), notePath);
+        : path.resolve(process.cwd(), baseDir, notePath);
     let ext = path.extname(notePath);
     if (isNullOrEmpty(ext)) {
         notePath = path.join(
@@ -28,4 +28,30 @@ export function createNewNote(name: string, sub: string[], options: any) {
         ),
         notePath
     );
+}
+
+export function setConfiguration(name: string, sub: string[], options: any) {
+    // TODO: complete config function
+}
+
+export function showTemplates(name: string, sub: string[], options: any) {
+    // TODO: Display all templates
+}
+
+export function initHandler(name: string, sub: string[], options: any) {
+    // TODO: Initial guidance
+}
+
+export function uploadImage(name: string, sub: string[], options: any) {
+    // TODO:
+    const uploadImageCommand = process.env["PICTURE_CLI"] || "";
+    const application = uploadImageCommand.split(" ")[0];
+    if (!shell.which(application)) {
+        console.error("%s : command not found", application);
+        shell.exit(1);
+    }
+}
+
+export function linkMakrdownNotes(name: string, sub: string[], options: any) {
+    // TODO:
 }

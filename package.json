@@ -1,13 +1,13 @@
 {
     "name": "ndm-cli",
-    "version": "1.0.2",
+    "version": "1.0.4",
     "description": "note dispose manager",
     "main": "index.js",
     "scripts": {
         "test": "node dist/index.js",
         "build": "tsc -w",
         "dev": "tsc -w && nodemon --inspect dist/index.js",
-        "debug": "node ./dist/index.js new ./src"
+        "debug": "node ./dist/index.js upload ./src"
     },
     "repository": {
         "type": "git",
@@ -32,9 +32,11 @@
         "@types/node": "^14.14.13"
     },
     "dependencies": {
+        "@types/shelljs": "^0.8.8",
         "args": "^5.0.1",
         "dotenv": "^8.2.0",
         "lodash": "^4.17.20",
-        "path-extra": "^4.3.0"
+        "path-extra": "^4.3.0",
+        "shelljs": "^0.8.4"
     }
 }

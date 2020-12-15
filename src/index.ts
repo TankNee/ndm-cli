@@ -1,6 +1,13 @@
 #!/usr/bin/env node
 import args from "args";
-import { createNewNote } from "./commands";
+import {
+    createNewNote,
+    initHandler,
+    setConfiguration,
+    showTemplates,
+    uploadImage,
+    linkMakrdownNotes,
+} from "./commands";
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
@@ -10,6 +17,8 @@ import path from "path";
  */
 if (fs.existsSync(path.join(process.cwd(), ".ndmrc"))) {
     dotenv.config({ path: path.join(process.cwd(), ".ndmrc") });
+} else {
+    dotenv.config({ path: path.resolve(__dirname, "../.ndmrc") });
 }
 /**
  * Definition
@@ -34,16 +43,50 @@ args.options([
         defaultValue: "md",
     },
 ]);
-
+/**
+ * Create new note template
+ */
 args.command(
-    "new",
+    "create",
     "create a note by template in current folder or the folder specified by config file (.ndmrc)",
     createNewNote
+);
+/**
+ * Show all templates that have installed
+ */
+args.command(
+    "templates",
+    "show all templates that have installed",
+    showTemplates
+);
+
+args.command(
+    "init",
+    "initialize the note folder, providing a simple configuration file with .ndmrc",
+    initHandler
+);
+
+args.command(
+    "config",
+    "config local .ndmrc file by command line interface",
+    setConfiguration
+);
+
+args.command(
+    "upload",
+    "upload local images which are found in note files",
+    uploadImage
+);
+
+args.command(
+    "lint",
+    "lint markdown note files using the remark cli",
+    linkMakrdownNotes
 );
 
 args.examples([
     {
-        usage: "ndm new ./note/test.md -l zh-cn -t leetcode -e md",
+        usage: "ndm create ./note/test.md -l zh-cn -t leetcode -e md",
         description:
             "create a markdown note in relative path ./note which name is test.md and apply template by zh-cn",
     },

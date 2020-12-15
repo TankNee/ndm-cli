@@ -1,3 +1,4 @@
+import { PathLike } from "fs";
 import _ from "lodash";
 
 export function isNullOrEmpty(obj: any) {
@@ -43,4 +44,11 @@ export function getFormatDate(originDate: Date | null = null) {
         ":" +
         second;
     return currentDate;
+}
+/**
+ * get local images from note base directory
+ * @param absolutePath 
+ */
+export function getLocalImages(absolutePath: PathLike) {
+    // TODO: Get local Images
 }
