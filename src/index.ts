@@ -1,4 +1,4 @@
-#! node#!/usr/bin/env node
+#!/usr/bin/env node
 import args from "args";
 import { createNewNote } from "./commands";
 import dotenv from "dotenv";
