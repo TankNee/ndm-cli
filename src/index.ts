@@ -12,6 +12,7 @@ import {
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
+import consola from "consola";
 import { isNullOrEmpty } from "./utlis";
 
 /**
@@ -26,7 +27,7 @@ if (fs.existsSync(path.join(process.cwd(), ".ndmrc"))) {
 export const picgoURL = process.env["PICGO_URL"] || "";
 
 if (isNullOrEmpty(picgoURL)) {
-    console.error("fail to load picgo url from .ndmrc");
+    consola.error("fail to load picgo url from .ndmrc");
     shell.exit(1);
 }
 /**
@@ -54,6 +55,11 @@ args.options([
     {
         name: "all",
         description: "Upload all images of a folder",
+        defaultValue: false,
+    },
+    {
+        name: "recursion",
+        description: "Recursively call the input to file path",
         defaultValue: false,
     },
 ]);

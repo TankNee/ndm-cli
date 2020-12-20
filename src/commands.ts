@@ -1,10 +1,13 @@
 import path from "path";
 import _ from "lodash";
 import fs from "fs";
+import consola from "consola";
 import {
+    generateFolderStructure,
     getAbsolutePath,
     getFormatDate,
     getImagesFromNote,
+    isDirectory,
     isNullOrEmpty,
     replaceImages,
     validateFilePath,
@@ -49,47 +52,60 @@ export function initHandler(name: string, sub: string[], options: any) {
 }
 
 export async function uploadImage(name: string, sub: string[], options: any) {
-    if (!options.all) {
-        // validate path
+    const _uploadImage = async (filePath: string) => {
         try {
-            let filePath = validateFilePath(sub[0]);
-
-            console.log("========Extracting Images===\n");
+            consola.info("========Extracting Images===\n");
 
             const imagePaths = getImagesFromNote(filePath, true);
             if (imagePaths.length === 0) {
-                throw Error("no image is detected");
+                consola.info("no image is detected");
             }
-            console.log("%d images are detected\n", imagePaths.length);
-            console.log("========Uploading Images====\n");
+            consola.log("%d images are detected\n", imagePaths.length);
+            consola.info("========Uploading Images====\n");
 
-            const { body: res } = await uploadImages(imagePaths);
-            if (!res.success) {
-                throw Error(res.message);
-            }
-            if (
-                !_.isArray(res.result) ||
-                res.result.length !== imagePaths.length
-            ) {
+            const res = await uploadImages(
+                imagePaths,
+                (imagePath: string, index: number) => {
+                    consola.log(
+                        `(${index + 1}/${
+                            imagePaths.length
+                        }) Uploading ${imagePath} \n`
+                    );
+                }
+            );
+            if (!_.isArray(res) || res.length !== imagePaths.length) {
                 throw Error("upload response is invalid");
             }
 
-            console.log("========Replacing Images====\n");
+            consola.info("========Replacing Images====\n");
 
-            replaceImages(filePath, imagePaths, res.result);
-            console.log("============================\n");
-            console.log(
-                "%d images have uploaded successfully! They are:\n",
-                res.result.length
-            );
-            imagePaths.forEach((img, i) => {
-                console.log(`${img} => ${res.result[i]}\n`);
-            });
-            console.log("============================\n");
+            replaceImages(filePath, imagePaths, res);
+            consola.info("========Complete Task=======\n");
         } catch (error) {
-            console.error(error.message);
-            return;
+            consola.error(error.message);
         }
+    };
+    try {
+        let filePath = validateFilePath(sub[0], true);
+        if (isDirectory(filePath)) {
+            const folderStructure = generateFolderStructure(filePath);
+            for (let index = 0; index < folderStructure.length; index++) {
+                const fp = folderStructure[index];
+                consola.info(
+                    "No %d / %d. Uploading %s 's images\n",
+                    index + 1,
+                    folderStructure.length,
+                    fp
+                );
+                await _uploadImage(fp);
+                consola.success("%d Completed!\n", index + 1);
+            }
+        } else {
+            await _uploadImage(filePath);
+        }
+    } catch (error) {
+        consola.error(error.message);
+        return;
     }
 }
 

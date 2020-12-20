@@ -1,6 +1,6 @@
 {
     "name": "ndm-cli",
-    "version": "1.0.5",
+    "version": "1.0.8",
     "description": "note dispose manager",
     "main": "index.js",
     "scripts": {
@@ -8,7 +8,7 @@
         "build": "tsc -w",
         "dev": "tsc -w && nodemon --inspect dist/index.js",
         "debug_old": "node ./dist/index.js upload /Users/tanknee/Documents/PersonalDoc/MyDoc/课外/数据结构与算法/剑指offer题解/26.md",
-        "debug": "node ./dist/index.js upload /Users/tanknee/Documents/PersonalDoc/MyDoc/课内/数字图像处理/实验三.md"
+        "debug": "node ./dist/index.js upload /Users/tanknee/Documents/PersonalDoc/MyDoc/课内/数据库系统原理"
     },
     "repository": {
         "type": "git",
@@ -38,6 +38,7 @@
         "@types/markdown-it": "^10.0.3",
         "@types/superagent": "^4.1.10",
         "args": "^5.0.1",
+        "consola": "^2.15.0",
         "dotenv": "^8.2.0",
         "lodash": "^4.17.20",
         "markdown-it": "^12.0.3",

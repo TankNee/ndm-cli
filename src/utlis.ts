@@ -109,7 +109,10 @@ export function getAbsolutePath(notePath: string) {
  * @param filePath
  * @throws
  */
-export function validateFilePath(filePath: string) {
+export function validateFilePath(
+    filePath: string,
+    allowDirectory: boolean = false
+) {
     if (isNullOrEmpty(filePath)) {
         throw new Error(
             "you should convey a file path if you don't add the -a flag"
@@ -120,10 +123,37 @@ export function validateFilePath(filePath: string) {
         throw new Error("the specified path does not exist!");
     }
     const stat = fs.statSync(absolutePath);
-    if (stat.isDirectory()) {
+    if (!allowDirectory && stat.isDirectory()) {
         throw new Error(
             "the specified path is a directory! Instead of a file path!"
         );
     }
     return absolutePath;
+}
+
+export function isDirectory(filePath: string) {
+    const stat = fs.statSync(filePath);
+    return stat.isDirectory();
+}
+/**
+ *
+ * @param folderPath absolute folder path
+ */
+export function generateFolderStructure(folderPath: string) {
+    var children: string[] = [];
+    fs.readdirSync(folderPath).forEach(function (fileName) {
+        var tempPath = path.join(folderPath, fileName);
+        var stat = fs.statSync(tempPath);
+        if (stat && stat.isDirectory()) {
+            children = children.concat(generateFolderStructure(tempPath));
+        } else {
+            // TODO: add a file extension filter
+            const ext = path.extname(tempPath);
+            if (ext === ".md") {
+                children.push(tempPath);
+            }
+        }
+    });
+
+    return children;
 }
