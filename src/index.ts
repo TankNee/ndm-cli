@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import args from "args";
+import shell from "shelljs";
 import {
     createNewNote,
     initHandler,
@@ -11,6 +12,7 @@ import {
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
+import { isNullOrEmpty } from "./utlis";
 
 /**
  * Load configuration from .ndmrc file if it exists
@@ -20,6 +22,13 @@ if (fs.existsSync(path.join(process.cwd(), ".ndmrc"))) {
 } else {
     dotenv.config({ path: path.resolve(__dirname, "../.ndmrc") });
 }
+
+export const picgoURL = process.env["PICGO_URL"] || "";
+
+if (isNullOrEmpty(picgoURL)) {
+    console.error("fail to load picgo url from .ndmrc");
+    shell.exit(1);
+}
 /**
  * Definition
  */
@@ -28,27 +37,32 @@ args.options([
     {
         name: "language",
         description:
-            "choose the language of note template, en-us,zh-cn etc. -l or --language",
+            "Choose the language of note template, en-us,zh-cn etc. -l or --language",
         defaultValue: "zh-cn",
     },
     {
         name: "type",
         description:
-            "choose the type of note template. leetcode, plain note or costum template from internet(https://...) etc. -t or --type <type name>",
+            "Choose the type of note template. leetcode, plain note or costum template from internet(https://...) etc. -t or --type <type name>",
         defaultValue: "leetcode",
     },
     {
         name: "ext",
-        description: "extension of note file, md,txt etc.",
+        description: "Extension of note file, md,txt etc.",
         defaultValue: "md",
+    },
+    {
+        name: "all",
+        description: "Upload all images of a folder",
+        defaultValue: false,
     },
 ]);
 /**
  * Create new note template
  */
 args.command(
-    "create",
-    "create a note by template in current folder or the folder specified by config file (.ndmrc)",
+    "Create",
+    "Create a note by template in current folder or the folder specified by config file (.ndmrc)",
     createNewNote
 );
 /**
@@ -56,31 +70,31 @@ args.command(
  */
 args.command(
     "templates",
-    "show all templates that have installed",
+    "Show all templates that have installed",
     showTemplates
 );
 
 args.command(
     "init",
-    "initialize the note folder, providing a simple configuration file with .ndmrc",
+    "Initialize the note folder, providing a simple configuration file with .ndmrc",
     initHandler
 );
 
 args.command(
     "config",
-    "config local .ndmrc file by command line interface",
+    "Config local .ndmrc file by command line interface",
     setConfiguration
 );
 
 args.command(
     "upload",
-    "upload local images which are found in note files",
+    "Upload local images which are found in note file",
     uploadImage
 );
 
 args.command(
     "lint",
-    "lint markdown note files using the remark cli",
+    "Lint markdown note files using the remark cli",
     linkMakrdownNotes
 );
 
@@ -88,7 +102,7 @@ args.examples([
     {
         usage: "ndm create ./note/test.md -l zh-cn -t leetcode -e md",
         description:
-            "create a markdown note in relative path ./note which name is test.md and apply template by zh-cn",
+            "Create a markdown note in relative path ./note which name is test.md and apply template by zh-cn",
     },
 ]);
 

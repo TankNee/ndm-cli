@@ -1,13 +1,14 @@
 {
     "name": "ndm-cli",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "description": "note dispose manager",
     "main": "index.js",
     "scripts": {
         "test": "node dist/index.js",
         "build": "tsc -w",
         "dev": "tsc -w && nodemon --inspect dist/index.js",
-        "debug": "node ./dist/index.js upload ./src"
+        "debug_old": "node ./dist/index.js upload /Users/tanknee/Documents/PersonalDoc/MyDoc/课外/数据结构与算法/剑指offer题解/26.md",
+        "debug": "node ./dist/index.js upload /Users/tanknee/Documents/PersonalDoc/MyDoc/课内/数字图像处理/实验三.md"
     },
     "repository": {
         "type": "git",
@@ -29,14 +30,19 @@
         "@types/args": "^3.0.0",
         "nodemon": "^2.0.6",
         "@types/lodash": "^4.14.165",
-        "@types/node": "^14.14.13"
+        "@types/node": "^14.14.13",
+        "@types/marked": "^1.2.1",
+        "@types/shelljs": "^0.8.8"
     },
     "dependencies": {
-        "@types/shelljs": "^0.8.8",
+        "@types/markdown-it": "^10.0.3",
+        "@types/superagent": "^4.1.10",
         "args": "^5.0.1",
         "dotenv": "^8.2.0",
         "lodash": "^4.17.20",
+        "markdown-it": "^12.0.3",
         "path-extra": "^4.3.0",
-        "shelljs": "^0.8.4"
+        "shelljs": "^0.8.4",
+        "superagent": "^6.1.0"
     }
 }

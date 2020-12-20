@@ -8,7 +8,7 @@ FOLDER=
 # PicGo document: https://picgo.github.io/PicGo-Doc/zh/guide/advance.html#%E5%91%BD%E4%BB%A4%E8%A1%8C%E4%B8%8A%E4%BC%A0
 # PicGo Website: https://github.com/Molunerfinn/PicGo
 # You should install PicGo before you upload picture through it
-PICTURE_CLI=/Applications/PicGo.app/Contents/MacOS/PicGo upload
+PICGO_URL=http://127.0.0.1:36677/upload
 
 # Git pre-commit hook
 PRE_COMMIT_HOOK=false
