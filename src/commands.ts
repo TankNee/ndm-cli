@@ -74,7 +74,7 @@ export function showTemplates(name: string, sub: string[], options: any) {
 export function initHandler(name: string, sub: string[], options: any) {
     // TODO: Initial guidance
     try {
-        const initPath = getAbsolutePath(sub[0]);
+        const initPath = getAbsolutePath(sub[0] || "");
         if (!isDirectory(initPath)) {
             throw new Error("the specified path is not a directory!");
         }
