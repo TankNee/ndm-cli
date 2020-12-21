@@ -1,14 +1,14 @@
 {
     "name": "ndm-cli",
-    "version": "1.0.9",
+    "version": "1.1.0",
     "description": "note dispose manager",
     "main": "index.js",
     "scripts": {
         "test": "node dist/index.js",
         "build": "tsc -w",
         "dev": "tsc -w && nodemon --inspect dist/index.js",
-        "flomo":"node ./dist/index.js flomo 'hello flomo'",
-        "debug_old": "node ./dist/index.js config flomo_url=https://flomoapp.com/iwh/MjI4Mw/7cabaf8cac946d4fb3c7e75babf25f88/ ",
+        "flomo": "node ./dist/index.js flomo 'hello flomo'",
+        "debug_old": "node ./dist/index.js init ./dist/ndm.js",
         "debug": "node ./dist/index.js upload /Users/tanknee/Documents/PersonalDoc/MyDoc/课内/数字图像处理/Essence.md"
     },
     "repository": {

@@ -128,7 +128,7 @@ args.examples([
         description: "Send message to flomo app!",
     },
     {
-        usage: "ndm config --flomourl=123123",
+        usage: "ndm config flomourl=123123 <-g>",
         description:
             "Config your .ndmrc file which is found on the local scale or global.",
     },

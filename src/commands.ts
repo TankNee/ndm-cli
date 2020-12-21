@@ -13,7 +13,6 @@ import {
     updateConfiguration,
     validateFilePath,
 } from "./utlis";
-import shell from "shelljs";
 import { saveFlomo, uploadImages } from "./api";
 import { flomoURL, globalConfigPath, localConfigPath } from "./index";
 
@@ -74,8 +73,18 @@ export function showTemplates(name: string, sub: string[], options: any) {
 
 export function initHandler(name: string, sub: string[], options: any) {
     // TODO: Initial guidance
-    const initPath = getAbsolutePath(sub[0]);
-    fs.copyFileSync(path.resolve(__dirname, `../.ndmrc`), initPath);
+    try {
+        const initPath = getAbsolutePath(sub[0]);
+        if (!isDirectory(initPath)) {
+            throw new Error("the specified path is not a directory!");
+        }
+        fs.copyFileSync(
+            path.resolve(__dirname, `../.ndmrc`),
+            path.join(initPath, ".ndmrc")
+        );
+    } catch (error) {
+        consola.error(error);
+    }
 }
 
 export async function uploadImage(name: string, sub: string[], options: any) {
@@ -149,7 +158,7 @@ export async function sendToFlomo(name: string, sub: string[], options: any) {
             throw new Error("message cannot be null or empty");
         }
         const response = await saveFlomo(message);
-        consola.success(response);
+        consola.info(response);
     } catch (error) {
         consola.error(error);
     }
