@@ -1,9 +1,10 @@
 import fs from "fs";
 import path from "path";
 import _ from "lodash";
+import consola from "consola";
 import markdownIt from "markdown-it";
 
-const md = new markdownIt({ linkify: true });
+const md = new markdownIt({ html: true });
 
 export function isNullOrEmpty(obj: any) {
     return _.isNull(obj) || _.isEmpty(obj);
@@ -69,20 +70,20 @@ export function getImagesFromNote(
 ) {
     // TODO:
     let file = fs.readFileSync(filePath, { encoding: "utf-8" });
-    file = file.replace(/\s+/g, "%20");
+
     file = md.render(file);
+    // file = file.replace(/\s+/g, "%20");
     const pattern = /<img[^<>]*?\ssrc=['\"]?(.*?)['\"]?\s.*?>/g;
-    // const pattern = new RegExp(/!\[.*?\]\((.*?)\)/, "gm");
     let matches = file.match(pattern) || [];
     let result: string[] = [];
-    for (const match of matches) {
-        const linkMatch = match.match(/src=['\"]?(.*?)['\"]?\s.*?/) || [];
+    for (let match of matches) {
+        // match = match.replace(/\s+/g, "%20");
+        const linkMatch = match.match(/src=['\"]?(.*?)['\"]+\s.*?/) || [];
         result.push(linkMatch[1]);
     }
     return result
         .filter((v) => !isNullOrEmpty(v))
-        .filter((v) => onlyLocal && !_.startsWith(v, "http"))
-        .map((v) => v.replace(/%20/g, " "));
+        .filter((v) => onlyLocal && !_.startsWith(v, "http"));
 }
 
 export function replaceImages(
@@ -156,4 +157,20 @@ export function generateFolderStructure(folderPath: string) {
     });
 
     return children;
+}
+
+export function updateConfiguration(
+    currentConfigPath: string,
+    key: string,
+    value: string
+) {
+    let file = fs.readFileSync(currentConfigPath, { encoding: "utf-8" });
+    const pattern = new RegExp(`${key.toUpperCase()}[^\n]*`);
+    file = file.replace(pattern, `${key.toUpperCase()}=${value}`);
+    fs.writeFileSync(currentConfigPath, file, { encoding: "utf-8" });
+    consola.success(
+        "Update configuration successfully: %s => %s",
+        key.toUpperCase(),
+        value
+    );
 }

@@ -10,10 +10,12 @@ import {
     isDirectory,
     isNullOrEmpty,
     replaceImages,
+    updateConfiguration,
     validateFilePath,
 } from "./utlis";
 import shell from "shelljs";
-import { uploadImages } from "./api";
+import { saveFlomo, uploadImages } from "./api";
+import { flomoURL, globalConfigPath, localConfigPath } from "./index";
 
 export function createNewNote(name: string, sub: string[], options: any) {
     let notePath = getAbsolutePath(sub[0]);
@@ -39,6 +41,31 @@ export function createNewNote(name: string, sub: string[], options: any) {
 
 export function setConfiguration(name: string, sub: string[], options: any) {
     // TODO: complete config function
+    try {
+        const tinyConfiguration = new Map();
+        sub.forEach((s) => {
+            const [key, value] = s.split("=");
+            if (isNullOrEmpty(key) || isNullOrEmpty(value))
+                throw new Error("configuration key or value is empty!");
+            if (process.env[key.toUpperCase()] === undefined)
+                throw new Error(
+                    `It does not have a configuration key that named ${key}`
+                );
+            tinyConfiguration.set(key, value);
+        });
+        const currentConfigPath = options.global
+            ? globalConfigPath
+            : localConfigPath;
+        if (isNullOrEmpty(currentConfigPath))
+            throw new Error(
+                "Couldn't detect .ndmrc file in current environment!"
+            );
+        tinyConfiguration.forEach((v, k) => {
+            updateConfiguration(currentConfigPath, k, v);
+        });
+    } catch (error) {
+        consola.error(error);
+    }
 }
 
 export function showTemplates(name: string, sub: string[], options: any) {
@@ -73,16 +100,17 @@ export async function uploadImage(name: string, sub: string[], options: any) {
                     );
                 }
             );
+
             if (!_.isArray(res) || res.length !== imagePaths.length) {
-                throw Error("upload response is invalid");
+                throw new Error("upload response is invalid");
             }
 
-            consola.info("========Replacing Images====\n");
+            consola.info("========Replacing Images..==\n");
 
             replaceImages(filePath, imagePaths, res);
             consola.info("========Complete Task=======\n");
         } catch (error) {
-            consola.error(error.message);
+            consola.error(error);
         }
     };
     try {
@@ -104,8 +132,26 @@ export async function uploadImage(name: string, sub: string[], options: any) {
             await _uploadImage(filePath);
         }
     } catch (error) {
-        consola.error(error.message);
+        consola.error(error);
         return;
+    }
+}
+
+export async function sendToFlomo(name: string, sub: string[], options: any) {
+    try {
+        if (isNullOrEmpty(flomoURL)) {
+            throw new Error(
+                "Flomo Url is empty, you'd config your flomo url firstly! \n ndm config flomo_url=<your_flomo_api_url>"
+            );
+        }
+        const message = sub[0];
+        if (isNullOrEmpty(message)) {
+            throw new Error("message cannot be null or empty");
+        }
+        const response = await saveFlomo(message);
+        consola.success(response);
+    } catch (error) {
+        consola.error(error);
     }
 }
 

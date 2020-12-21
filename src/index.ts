@@ -8,6 +8,7 @@ import {
     showTemplates,
     uploadImage,
     linkMakrdownNotes,
+    sendToFlomo,
 } from "./commands";
 import dotenv from "dotenv";
 import fs from "fs";
@@ -18,13 +19,21 @@ import { isNullOrEmpty } from "./utlis";
 /**
  * Load configuration from .ndmrc file if it exists
  */
+let _configurationPath: string = "";
 if (fs.existsSync(path.join(process.cwd(), ".ndmrc"))) {
-    dotenv.config({ path: path.join(process.cwd(), ".ndmrc") });
-} else {
-    dotenv.config({ path: path.resolve(__dirname, "../.ndmrc") });
+    _configurationPath = path.join(process.cwd(), ".ndmrc");
 }
+export const globalConfigPath = path.resolve(__dirname, "../.ndmrc");
 
+dotenv.config({
+    path: isNullOrEmpty(_configurationPath)
+        ? globalConfigPath
+        : _configurationPath,
+});
+
+export const localConfigPath = _configurationPath;
 export const picgoURL = process.env["PICGO_URL"] || "";
+export const flomoURL = process.env["FLOMO_URL"] || "";
 
 if (isNullOrEmpty(picgoURL)) {
     consola.error("fail to load picgo url from .ndmrc");
@@ -55,12 +64,14 @@ args.options([
     {
         name: "all",
         description: "Upload all images of a folder",
-        defaultValue: false,
     },
     {
         name: "recursion",
         description: "Recursively call the input to file path",
-        defaultValue: false,
+    },
+    {
+        name: "global",
+        description: "Set global .ndmrc file",
     },
 ]);
 /**
@@ -98,6 +109,8 @@ args.command(
     uploadImage
 );
 
+args.command("flomo", "Save message to flomo", sendToFlomo);
+
 args.command(
     "lint",
     "Lint markdown note files using the remark cli",
@@ -109,6 +122,15 @@ args.examples([
         usage: "ndm create ./note/test.md -l zh-cn -t leetcode -e md",
         description:
             "Create a markdown note in relative path ./note which name is test.md and apply template by zh-cn",
+    },
+    {
+        usage: "ndm flomo 'Hello Flomo!' ",
+        description: "Send message to flomo app!",
+    },
+    {
+        usage: "ndm config --flomourl=123123",
+        description:
+            "Config your .ndmrc file which is found on the local scale or global.",
     },
 ]);
 

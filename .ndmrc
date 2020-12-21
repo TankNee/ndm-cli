@@ -10,5 +10,8 @@ FOLDER=
 # You should install PicGo before you upload picture through it
 PICGO_URL=http://127.0.0.1:36677/upload
 
+# Flomo API URL
+FLOMO_URL=
+
 # Git pre-commit hook
 PRE_COMMIT_HOOK=false

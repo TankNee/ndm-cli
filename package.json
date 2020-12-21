@@ -1,14 +1,15 @@
 {
     "name": "ndm-cli",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "description": "note dispose manager",
     "main": "index.js",
     "scripts": {
         "test": "node dist/index.js",
         "build": "tsc -w",
         "dev": "tsc -w && nodemon --inspect dist/index.js",
-        "debug_old": "node ./dist/index.js upload /Users/tanknee/Documents/PersonalDoc/MyDoc/课外/数据结构与算法/剑指offer题解/26.md",
-        "debug": "node ./dist/index.js upload /Users/tanknee/Documents/PersonalDoc/MyDoc/课内/数据库系统原理"
+        "flomo":"node ./dist/index.js flomo 'hello flomo'",
+        "debug_old": "node ./dist/index.js config flomo_url=https://flomoapp.com/iwh/MjI4Mw/7cabaf8cac946d4fb3c7e75babf25f88/ ",
+        "debug": "node ./dist/index.js upload /Users/tanknee/Documents/PersonalDoc/MyDoc/课内/数字图像处理/Essence.md"
     },
     "repository": {
         "type": "git",
