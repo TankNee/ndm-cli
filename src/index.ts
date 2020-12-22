@@ -78,7 +78,7 @@ args.options([
  * Create new note template
  */
 args.command(
-    "Create",
+    "create",
     "Create a note by template in current folder or the folder specified by config file (.ndmrc)",
     createNewNote
 );
