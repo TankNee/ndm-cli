@@ -1,5 +1,6 @@
 import { flomoURL, picgoURL } from "./index";
 import superagent from "superagent";
+import consola from "consola";
 
 export async function uploadImages(imagePaths: string[], callback: Function) {
     let result: string[] = [];
@@ -10,6 +11,7 @@ export async function uploadImages(imagePaths: string[], callback: Function) {
             .post(picgoURL)
             .send({ list: [imagePath] });
         if (!res.success) {
+            consola.error(res);
             throw Error(`fail to upload ${imagePath}!`);
         }
         result = result.concat(res.result);

@@ -121,15 +121,31 @@ export function validateFilePath(
     }
     const absolutePath = getAbsolutePath(filePath);
     if (!fs.existsSync(absolutePath)) {
-        throw new Error("the specified path does not exist!");
+        throw new Error("this path does not exist!");
     }
     const stat = fs.statSync(absolutePath);
     if (!allowDirectory && stat.isDirectory()) {
-        throw new Error(
-            "the specified path is a directory! Instead of a file path!"
-        );
+        throw new Error("this path is a directory! Instead of a file path!");
     }
     return absolutePath;
+}
+/**
+ * Complete the note image path
+ * @param imagePath
+ * @returns {string}
+ */
+export function completeImagePath(imagePath: string): string {
+    let absolutePath: string = "";
+    try {
+        if (isNullOrEmpty(imagePath)) {
+            throw new Error("this image path is empty.");
+        }
+        absolutePath = validateFilePath(imagePath);
+    } catch (e) {
+        consola.error(e);
+        return imagePath;
+    }
+    return "";
 }
 
 export function isDirectory(filePath: string) {
