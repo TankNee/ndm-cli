@@ -137,7 +137,7 @@ export function linkMakrdownNotes(name: string, sub: string[], options: any) {
 
 const _uploadImage = async (filePath: string) => {
     try {
-        consola.info("========Extracting Images====\n");
+        consola.info("Extracting Images\n");
 
         const imagePaths = getImagesFromNote(filePath, true);
         if (imagePaths.length === 0) {
@@ -145,13 +145,14 @@ const _uploadImage = async (filePath: string) => {
             return;
         }
         consola.info("%d images are detected\n", imagePaths.length);
-        consola.info("========Validating Image Paths====\n");
-        const validatedPaths = imagePaths.map((ip) => completeImagePath(ip));
+        consola.info("Validating Image Paths\n");
+        const validatedPaths = imagePaths.map((ip) => completeImagePath(ip, filePath));
         if (validatedPaths.filter((vp) => vp.length).length === 0) {
-            consola.error("========No validated images are detected.====\n");
+            consola.info(validatedPaths)
+            consola.error("No validated images are detected.\n");
             return;
         }
-        consola.info("========Uploading Images====\n");
+        consola.info("Uploading Images\n");
 
         const res = await uploadImages(
             validatedPaths,
@@ -168,10 +169,10 @@ const _uploadImage = async (filePath: string) => {
             throw new Error("upload response is invalid");
         }
 
-        consola.info("========Replacing Images..====\n");
+        consola.info("Replacing Images..\n");
 
         replaceImages(filePath, imagePaths, res);
-        consola.info("========Complete Task=======\n");
+        consola.info("Complete Task\n");
     } catch (error) {
         consola.error(error);
     }

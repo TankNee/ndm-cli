@@ -98,11 +98,11 @@ export function replaceImages(
     fs.writeFileSync(filePath, file);
 }
 
-export function getAbsolutePath(notePath: string) {
+export function getAbsolutePath(notePath: string, rootPath: string = "") {
     const baseDir = process.env["FOLDER"] || "";
     notePath = path.isAbsolute(notePath)
         ? notePath
-        : path.resolve(process.cwd(), baseDir, notePath);
+        : path.resolve(rootPath ? rootPath : process.cwd(), baseDir, notePath);
     return notePath;
 }
 /**
@@ -112,14 +112,15 @@ export function getAbsolutePath(notePath: string) {
  */
 export function validateFilePath(
     filePath: string,
-    allowDirectory: boolean = false
+    allowDirectory: boolean = false,
+    rootPath: string = ""
 ) {
     if (isNullOrEmpty(filePath)) {
         throw new Error(
             "you should convey a file path if you don't add the -a flag"
         );
     }
-    const absolutePath = getAbsolutePath(filePath);
+    const absolutePath = getAbsolutePath(filePath, rootPath);
     if (!fs.existsSync(absolutePath)) {
         throw new Error("this path does not exist!");
     }
@@ -132,20 +133,21 @@ export function validateFilePath(
 /**
  * Complete the note image path
  * @param imagePath
+ * @param notePath
  * @returns {string}
  */
-export function completeImagePath(imagePath: string): string {
+export function completeImagePath(imagePath: string, notePath: string): string {
     let absolutePath: string = "";
     try {
         if (isNullOrEmpty(imagePath)) {
             throw new Error("this image path is empty.");
         }
-        absolutePath = validateFilePath(imagePath);
+        absolutePath = validateFilePath(imagePath, false, path.dirname(notePath));
     } catch (e) {
         consola.error(e);
-        return imagePath;
+        return "";
     }
-    return "";
+    return absolutePath;
 }
 
 export function isDirectory(filePath: string) {
