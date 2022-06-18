@@ -171,7 +171,9 @@ export function generateFolderStructure(folderPath: string, fileExt: string[]) {
         var tempPath = path.join(folderPath, fileName);
         var stat = fs.statSync(tempPath);
         if (stat && stat.isDirectory()) {
-            children = children.concat(generateFolderStructure(tempPath, fileExt));
+            children = children.concat(
+                generateFolderStructure(tempPath, fileExt)
+            );
         } else {
             // TODO: add a file extension filter
             const ext = path.extname(tempPath);
@@ -202,34 +204,31 @@ export function updateConfiguration(
 
 export async function uploadSingleFile(filePath: string) {
     try {
-        const spinner = ora("Extracting Images").start();
-        consola.info("Extracting Images\n");
+        const spinner = ora("Extracting Images...").start();
 
         const imagePaths = getImagesFromNote(filePath, true);
         if (imagePaths.length === 0) {
-            consola.info("no image is detected");
+            spinner.warn("No images found in this note.");
             return;
         }
-        consola.info("%d images are detected\n", imagePaths.length);
-        consola.info("Validating Image Paths\n");
+        spinner.text = `Found ${imagePaths.length} images.`;
+
+        spinner.text = "Validating images...";
         const validatedPaths = imagePaths.map((ip) =>
             completeImagePath(ip, filePath)
         );
         if (validatedPaths.filter((vp) => vp.length).length === 0) {
-            consola.info(validatedPaths);
-            consola.error("No validated images are detected.\n");
+            spinner.warn("No valid images found in this note.");
             return;
         }
-        consola.info("Uploading Images\n");
+        spinner.text = "Uploading images...";
 
         const res = await uploadImages(
             validatedPaths,
             (imagePath: string, index: number) => {
-                consola.log(
-                    `(${index + 1}/${
-                        imagePaths.length
-                    }) Uploading ${imagePath} \n`
-                );
+                spinner.text = `Uploading image ${index + 1}/${
+                    imagePaths.length
+                }: ${imagePath}`;
             }
         );
 
@@ -237,17 +236,21 @@ export async function uploadSingleFile(filePath: string) {
             throw new Error("upload response is invalid");
         }
 
-        consola.info("Replacing Images..\n");
+        spinner.text = "Replacing images...";
 
         replaceImages(filePath, imagePaths, res);
-        consola.info("Complete Task\n");
+        spinner.info("Upload images successfully.");
     } catch (error) {
         consola.error(error);
         return;
     }
 }
 
-export function updateSingleFileImageSuffix(filePath: string, src: string, dest: string) {
+export function updateSingleFileImageSuffix(
+    filePath: string,
+    src: string,
+    dest: string
+) {
     try {
         consola.info("Extracting Images\n");
         const imagePaths = getImagesFromNote(filePath, true);
