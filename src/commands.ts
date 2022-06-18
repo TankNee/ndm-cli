@@ -14,8 +14,8 @@ import {
     updateConfiguration,
     validateFilePath,
 } from "./utlis";
-import { saveFlomo, uploadImages } from "./api";
-import { flomoURL, globalConfigPath, localConfigPath } from "./index";
+import { uploadImages } from "./api";
+import { globalConfigPath, localConfigPath } from "./index";
 
 export function createNewNote(name: string, sub: string[], options: any) {
     let notePath = getAbsolutePath(sub[0]);
@@ -110,24 +110,6 @@ export async function uploadImage(name: string, sub: string[], options: any) {
     } catch (error) {
         consola.error(error);
         return;
-    }
-}
-
-export async function sendToFlomo(name: string, sub: string[], options: any) {
-    try {
-        if (isNullOrEmpty(flomoURL)) {
-            throw new Error(
-                "Flomo Url is empty, you'd config your flomo url firstly! \n ndm config flomo_url=<your_flomo_api_url>"
-            );
-        }
-        const message = sub[0];
-        if (isNullOrEmpty(message)) {
-            throw new Error("message cannot be null or empty");
-        }
-        const response = await saveFlomo(message);
-        consola.info(response);
-    } catch (error) {
-        consola.error(error);
     }
 }
 

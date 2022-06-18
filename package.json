@@ -7,7 +7,6 @@
         "test": "node dist/index.js",
         "build": "tsc -w",
         "dev": "tsc -w && nodemon --inspect dist/index.js",
-        "flomo": "node ./dist/index.js flomo 'hello flomo'",
         "debug_old": "node ./dist/index.js init ./dist/ndm.js",
         "debug": "node ./dist/index.js upload D:\\Aria2\\test\\Chapter-7链接.md"
     },
@@ -29,15 +28,15 @@
     "homepage": "https://github.com/TankNee/ndm-cli#readme",
     "devDependencies": {
         "@types/args": "^3.0.0",
-        "nodemon": "^2.0.6",
         "@types/lodash": "^4.14.165",
-        "@types/node": "^14.14.13",
         "@types/marked": "^1.2.1",
-        "@types/shelljs": "^0.8.8"
+        "@types/node": "^14.18.21",
+        "@types/shelljs": "^0.8.8",
+        "nodemon": "^2.0.6",
+        "@types/markdown-it": "^10.0.3",
+        "@types/superagent": "^4.1.10"
     },
     "dependencies": {
-        "@types/markdown-it": "^10.0.3",
-        "@types/superagent": "^4.1.10",
         "args": "^5.0.1",
         "consola": "^2.15.0",
         "dotenv": "^8.2.0",

@@ -10,7 +10,6 @@
   Commands:
     Create     Create a note by template in current folder or the folder specified by config file (.ndmrc)
     config     Config local .ndmrc file by command line interface
-    flomo      Save message to flomo
     help       Display help
     init       Initialize the note folder, providing a simple configuration file with .ndmrc
     lint       Lint markdown note files using the remark cli
@@ -31,11 +30,5 @@
   Examples:
     - Create a markdown note in relative path ./note which name is test.md and apply template by zh-cn
     $ ndm create ./note/test.md -l zh-cn -t leetcode -e md
-
-    - Send message to flomo app!
-    $ ndm flomo 'Hello Flomo!'
-
-    - Config your .ndmrc file which is found on the local scale or global.
-    $ ndm config --flomourl=123123
 ```
 

@@ -1,4 +1,4 @@
-import { flomoURL, picgoURL } from "./index";
+import { picgoURL } from "./index";
 import superagent from "superagent";
 import consola from "consola";
 
@@ -17,9 +17,4 @@ export async function uploadImages(imagePaths: string[], callback: Function) {
         result = result.concat(res.result);
     }
     return result;
-}
-
-export async function saveFlomo(message: string) {
-    const result = await superagent.post(flomoURL).send({ content: message });
-    return result.body;
 }

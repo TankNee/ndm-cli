@@ -8,7 +8,6 @@ import {
     showTemplates,
     uploadImage,
     linkMakrdownNotes,
-    sendToFlomo,
 } from "./commands";
 import dotenv from "dotenv";
 import fs from "fs";
@@ -33,7 +32,6 @@ dotenv.config({
 
 export const localConfigPath = _configurationPath;
 export const picgoURL = process.env["PICGO_URL"] || "";
-export const flomoURL = process.env["FLOMO_URL"] || "";
 
 if (isNullOrEmpty(picgoURL)) {
     consola.error("fail to load picgo url from .ndmrc");
@@ -109,7 +107,6 @@ args.command(
     uploadImage
 );
 
-args.command("flomo", "Save message to flomo", sendToFlomo);
 
 args.command(
     "lint",
@@ -122,15 +119,6 @@ args.examples([
         usage: "ndm create ./note/test.md -l zh-cn -t leetcode -e md",
         description:
             "Create a markdown note in relative path ./note which name is test.md and apply template by zh-cn",
-    },
-    {
-        usage: "ndm flomo 'Hello Flomo!' ",
-        description: "Send message to flomo app!",
-    },
-    {
-        usage: "ndm config flomourl=123123 <-g>",
-        description:
-            "Config your .ndmrc file which is found on the local scale or global.",
     },
 ]);
 
