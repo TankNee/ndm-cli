@@ -1,8 +1,10 @@
 import fs from "fs";
 import path from "path";
+import ora from "ora";
 import _ from "lodash";
 import consola from "consola";
 import markdownIt from "markdown-it";
+import { uploadImages } from "./api";
 
 const md = new markdownIt({ html: true });
 
@@ -142,7 +144,11 @@ export function completeImagePath(imagePath: string, notePath: string): string {
         if (isNullOrEmpty(imagePath)) {
             throw new Error("this image path is empty.");
         }
-        absolutePath = validateFilePath(imagePath, false, path.dirname(notePath));
+        absolutePath = validateFilePath(
+            imagePath,
+            false,
+            path.dirname(notePath)
+        );
     } catch (e) {
         consola.error(e);
         return "";
@@ -157,18 +163,19 @@ export function isDirectory(filePath: string) {
 /**
  *
  * @param folderPath absolute folder path
+ * @param fileExt file extension eg: [".md", ".markdown"]
  */
-export function generateFolderStructure(folderPath: string) {
+export function generateFolderStructure(folderPath: string, fileExt: string[]) {
     var children: string[] = [];
     fs.readdirSync(folderPath).forEach(function (fileName) {
         var tempPath = path.join(folderPath, fileName);
         var stat = fs.statSync(tempPath);
         if (stat && stat.isDirectory()) {
-            children = children.concat(generateFolderStructure(tempPath));
+            children = children.concat(generateFolderStructure(tempPath, fileExt));
         } else {
             // TODO: add a file extension filter
             const ext = path.extname(tempPath);
-            if (ext === ".md") {
+            if (fileExt.includes(ext)) {
                 children.push(tempPath);
             }
         }
@@ -191,4 +198,61 @@ export function updateConfiguration(
         key.toUpperCase(),
         value
     );
+}
+
+export async function uploadSingleFile(filePath: string) {
+    try {
+        const spinner = ora("Extracting Images").start();
+        consola.info("Extracting Images\n");
+
+        const imagePaths = getImagesFromNote(filePath, true);
+        if (imagePaths.length === 0) {
+            consola.info("no image is detected");
+            return;
+        }
+        consola.info("%d images are detected\n", imagePaths.length);
+        consola.info("Validating Image Paths\n");
+        const validatedPaths = imagePaths.map((ip) =>
+            completeImagePath(ip, filePath)
+        );
+        if (validatedPaths.filter((vp) => vp.length).length === 0) {
+            consola.info(validatedPaths);
+            consola.error("No validated images are detected.\n");
+            return;
+        }
+        consola.info("Uploading Images\n");
+
+        const res = await uploadImages(
+            validatedPaths,
+            (imagePath: string, index: number) => {
+                consola.log(
+                    `(${index + 1}/${
+                        imagePaths.length
+                    }) Uploading ${imagePath} \n`
+                );
+            }
+        );
+
+        if (!_.isArray(res) || res.length !== imagePaths.length) {
+            throw new Error("upload response is invalid");
+        }
+
+        consola.info("Replacing Images..\n");
+
+        replaceImages(filePath, imagePaths, res);
+        consola.info("Complete Task\n");
+    } catch (error) {
+        consola.error(error);
+        return;
+    }
+}
+
+export function updateSingleFileImageSuffix(filePath: string, src: string, dest: string) {
+    try {
+        consola.info("Extracting Images\n");
+        const imagePaths = getImagesFromNote(filePath, true);
+    } catch (error) {
+        consola.error(error);
+        return;
+    }
 }

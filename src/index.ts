@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 import args from "args";
 import shell from "shelljs";
+import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
+import consola from "consola";
+import { isNullOrEmpty } from "./utlis";
 import {
     createNewNote,
     initHandler,
     setConfiguration,
     showTemplates,
     uploadImage,
-    linkMakrdownNotes,
+    lintMakrdownNotes,
 } from "./commands";
-import dotenv from "dotenv";
-import fs from "fs";
-import path from "path";
-import consola from "consola";
-import { isNullOrEmpty } from "./utlis";
 
 /**
  * Load configuration from .ndmrc file if it exists
@@ -45,7 +45,7 @@ args.options([
     {
         name: "language",
         description:
-            "Choose the language of note template, en-us,zh-cn etc. -l or --language",
+            "Choose the language of note template, en-us, zh-cn etc. -l or --language",
         defaultValue: "zh-cn",
     },
     {
@@ -56,7 +56,7 @@ args.options([
     },
     {
         name: "ext",
-        description: "Extension of note file, md,txt etc.",
+        description: "Extension of note file, md, txt etc.",
         defaultValue: "md",
     },
     {
@@ -111,7 +111,7 @@ args.command(
 args.command(
     "lint",
     "Lint markdown note files using the remark cli",
-    linkMakrdownNotes
+    lintMakrdownNotes
 );
 
 args.examples([

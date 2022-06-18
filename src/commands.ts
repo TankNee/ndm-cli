@@ -2,20 +2,17 @@ import path from "path";
 import _ from "lodash";
 import fs from "fs";
 import consola from "consola";
+import { globalConfigPath, localConfigPath } from "./index";
 import {
-    completeImagePath,
     generateFolderStructure,
     getAbsolutePath,
     getFormatDate,
-    getImagesFromNote,
     isDirectory,
     isNullOrEmpty,
-    replaceImages,
     updateConfiguration,
+    uploadSingleFile,
     validateFilePath,
 } from "./utlis";
-import { uploadImages } from "./api";
-import { globalConfigPath, localConfigPath } from "./index";
 
 export function createNewNote(name: string, sub: string[], options: any) {
     let notePath = getAbsolutePath(sub[0]);
@@ -49,7 +46,7 @@ export function setConfiguration(name: string, sub: string[], options: any) {
                 throw new Error("configuration key or value is empty!");
             if (process.env[key.toUpperCase()] === undefined)
                 throw new Error(
-                    `It does not have a configuration key that named ${key}`
+                    `It does not have a configuration key named ${key}`
                 );
             tinyConfiguration.set(key, value);
         });
@@ -80,7 +77,7 @@ export function initHandler(name: string, sub: string[], options: any) {
             throw new Error("the specified path is not a directory!");
         }
         fs.copyFileSync(
-            path.resolve(__dirname, `../.ndmrc`),
+            globalConfigPath,
             path.join(initPath, ".ndmrc")
         );
     } catch (error) {
@@ -90,9 +87,9 @@ export function initHandler(name: string, sub: string[], options: any) {
 
 export async function uploadImage(name: string, sub: string[], options: any) {
     try {
-        let filePath = validateFilePath(sub[0], true);
+        const filePath = validateFilePath(sub[0], true);
         if (isDirectory(filePath)) {
-            const folderStructure = generateFolderStructure(filePath);
+            const folderStructure = generateFolderStructure(filePath, [".md"]);
             for (let index = 0; index < folderStructure.length; index++) {
                 const fp = folderStructure[index];
                 consola.info(
@@ -101,11 +98,11 @@ export async function uploadImage(name: string, sub: string[], options: any) {
                     folderStructure.length,
                     fp
                 );
-                await _uploadImage(fp);
+                await uploadSingleFile(fp);
                 consola.success("%d Completed!\n", index + 1);
             }
         } else {
-            await _uploadImage(filePath);
+            await uploadSingleFile(filePath);
         }
     } catch (error) {
         consola.error(error);
@@ -113,49 +110,43 @@ export async function uploadImage(name: string, sub: string[], options: any) {
     }
 }
 
-export function linkMakrdownNotes(name: string, sub: string[], options: any) {
-    // TODO:
-}
-
-const _uploadImage = async (filePath: string) => {
+export function editImageSuffix(name: string, sub: string[], options: any) {
     try {
-        consola.info("Extracting Images\n");
-
-        const imagePaths = getImagesFromNote(filePath, true);
-        if (imagePaths.length === 0) {
-            consola.info("no image is detected");
-            return;
-        }
-        consola.info("%d images are detected\n", imagePaths.length);
-        consola.info("Validating Image Paths\n");
-        const validatedPaths = imagePaths.map((ip) => completeImagePath(ip, filePath));
-        if (validatedPaths.filter((vp) => vp.length).length === 0) {
-            consola.info(validatedPaths)
-            consola.error("No validated images are detected.\n");
-            return;
-        }
-        consola.info("Uploading Images\n");
-
-        const res = await uploadImages(
-            validatedPaths,
-            (imagePath: string, index: number) => {
-                consola.log(
-                    `(${index + 1}/${
-                        imagePaths.length
-                    }) Uploading ${imagePath} \n`
+        const filePath = validateFilePath(sub[0], true);
+        if (isDirectory(filePath)) {
+            const folderStructure = generateFolderStructure(filePath, [".md"]);
+            for (let index = 0; index < folderStructure.length; index++) {
+                const fp = folderStructure[index];
+                consola.info(
+                    "No %d / %d. Editing %s 's images\n",
+                    index + 1,
+                    folderStructure.length,
+                    fp
                 );
+                const suffix = sub[1] || "";
+                const ext = path.extname(fp);
+                const newFilePath = path.join(
+                    path.dirname(fp),
+                    `${path.basename(fp, ext)}-${suffix}${ext}`
+                );
+                fs.renameSync(fp, newFilePath);
+                consola.success("%d Completed!\n", index + 1);
             }
-        );
-
-        if (!_.isArray(res) || res.length !== imagePaths.length) {
-            throw new Error("upload response is invalid");
+        } else {
+            const suffix = sub[1] || "";
+            const ext = path.extname(filePath);
+            const newFilePath = path.join(
+                path.dirname(filePath),
+                `${path.basename(filePath, ext)}-${suffix}${ext}`
+            );
+            fs.renameSync(filePath, newFilePath);
         }
-
-        consola.info("Replacing Images..\n");
-
-        replaceImages(filePath, imagePaths, res);
-        consola.info("Complete Task\n");
     } catch (error) {
         consola.error(error);
+        return;
     }
-};
+}
+
+export function lintMakrdownNotes(name: string, sub: string[], options: any) {
+    // TODO: Lint markdown notes
+}
